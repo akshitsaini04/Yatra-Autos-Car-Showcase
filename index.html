@@ -466,11 +466,11 @@
   </div>
   <div class="filters">
     <button class="filter-btn active" data-filter="all">All</button>
-    <button class="filter-btn" data-filter="S Class">S Class</button>
-    <button class="filter-btn" data-filter="hypercar">A+ Class</button>
-    <button class="filter-btn" data-filter="electric">A Class</button>
-    <button class="filter-btn" data-filter="suv">B Class</button>
-    <button class="filter-btn" data-filter="muscle">C Class</button>
+    <button class="filter-btn" data-filter="sclass">S Class</button>
+    <button class="filter-btn" data-filter="aplusclass">A+ Class</button>
+    <button class="filter-btn" data-filter="aclass">A Class</button>
+    <button class="filter-btn" data-filter="bclass">B Class</button>
+    <button class="filter-btn" data-filter="cclass">C Class</button>
   </div>
   <div class="car-grid" id="carGrid"></div>
 </section>
@@ -525,46 +525,46 @@
               <input class="form-input" id="f_make" placeholder="e.g. Ferrari" />
             </div>
             <div class="form-group">
-              <label class="form-label">Model Name *</label>
+              <label class="form-label">Model Name</label>
               <input class="form-input" id="f_name" placeholder="e.g. SF90 Stradale" />
             </div>
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label class="form-label">Year *</label>
+              <label class="form-label">Year</label>
               <input class="form-input" id="f_year" type="number" placeholder="e.g. 2024" min="1900" max="2099" />
             </div>
             <div class="form-group">
               <label class="form-label">Category *</label>
               <select class="form-select" id="f_category">
-                <option value="supercar">S Class</option>
-                <option value="hypercar">A+ Class</option>
-                <option value="electric">A Class</option>
-                <option value="suv">B Class</option>
-                <option value="muscle">C Class</option>
+                <option value="sclass">S Class</option>
+                <option value="aplusclass">A+ Class</option>
+                <option value="aclass">A Class</option>
+                <option value="bclass">B Class</option>
+                <option value="cclass">C Class</option>
               </select>
             </div>
           </div>
           <div class="form-group">
-            <label class="form-label">Badge Label *</label>
+            <label class="form-label">Badge Label</label>
             <input class="form-input" id="f_badge" placeholder="e.g. V10 Supercar, Electric Hypercar" />
             <span class="form-hint">Short label shown on the card (e.g. "Hybrid", "Track Special")</span>
           </div>
 
           <div class="form-section-title">Description</div>
           <div class="form-group">
-            <label class="form-label">Tagline *</label>
+            <label class="form-label">Tagline</label>
             <input class="form-input" id="f_tagline" placeholder="e.g. The pinnacle of speed and luxury" />
             <span class="form-hint">One punchy sentence shown in italics in the modal</span>
           </div>
           <div class="form-group">
-            <label class="form-label">Full Description *</label>
+            <label class="form-label">Full Description</label>
             <textarea class="form-textarea" id="f_desc" placeholder="Write a detailed paragraph about this car..."></textarea>
           </div>
 
           <div class="form-section-title">Images</div>
           <div class="form-group full">
-            <label class="form-label">Car Images (up to 6)</label>
+            <label class="form-label">Car Images (up to 6) *</label>
             <div class="img-input-wrap" style="display:flex;gap:8px;">
               <input class="form-input" id="f_img_url" placeholder="Paste an image URL…" style="flex:1;" />
               <button class="btn-add-feat" id="imgAddBtn" type="button">+ Add</button>
@@ -829,12 +829,12 @@ document.getElementById('deniedDismiss').addEventListener('click', () => {
 //  3. In Firestore → Rules, paste the security rules from SETUP.md
 // ═══════════════════════════════════════════════════════════════════
 const FIREBASE_CONFIG = {
-  apiKey:            "AIzaSyAvsqXebwWtxunkytfenIyQt1ty81Nhodc",
-  authDomain:        "yatra-autos-acd95.firebaseapp.com",
-  projectId:         "yatra-autos-acd95",
-  storageBucket:     "yatra-autos-acd95.firebasestorage.app",
-  messagingSenderId: "507367246503",
-  appId:             "1:507367246503:web:2b12aa77d835f954daa982",
+  apiKey:            "PASTE_YOUR_apiKey_HERE",
+  authDomain:        "PASTE_YOUR_authDomain_HERE",
+  projectId:         "PASTE_YOUR_projectId_HERE",
+  storageBucket:     "PASTE_YOUR_storageBucket_HERE",
+  messagingSenderId: "PASTE_YOUR_messagingSenderId_HERE",
+  appId:             "PASTE_YOUR_appId_HERE",
 };
 // Collection + document where the whole catalogue is stored
 const FS_COLLECTION = 'catalogue';
@@ -1014,7 +1014,7 @@ function renderCards(filter) {
       <div class="card-body">
         <div class="card-make">${car.make}</div>
         <div class="card-name">${car.name}</div>
-        <div class="card-meta">${car.year} · ${car.category.charAt(0).toUpperCase()+car.category.slice(1)}</div>
+        <div class="card-meta">${car.year} · ${{sclass:'S Class',aplusclass:'A+ Class',aclass:'A Class',bclass:'B Class',cclass:'C Class'}[car.category] || car.category}</div>
       </div>`;
     card.querySelector('.card-body').addEventListener('click', () => openModal(car));
     card.querySelector('.card-inner').addEventListener('click', () => openModal(car));
@@ -1037,7 +1037,7 @@ function openModal(car) {
   document.getElementById('modalBadge').textContent   = car.badge;
   document.getElementById('modalMake').textContent    = car.make;
   document.getElementById('modalName').textContent    = car.name;
-  document.getElementById('modalYear').textContent    = car.year + '  ·  ' + car.category.charAt(0).toUpperCase() + car.category.slice(1);
+  document.getElementById('modalYear').textContent    = car.year + '  ·  ' + ({sclass:'S Class',aplusclass:'A+ Class',aclass:'A Class',bclass:'B Class',cclass:'C Class'}[car.category] || car.category);
   document.getElementById('modalTagline').textContent = '\u201C' + car.tagline + '\u201D';
   document.getElementById('modalDesc').textContent    = car.desc;
   document.getElementById('featuresList').innerHTML   = car.features.map(f => `<span class="feature-tag">${f}</span>`).join('');
