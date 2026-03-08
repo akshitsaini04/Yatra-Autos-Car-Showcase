@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YATRA AUTOS. — Car Showcase</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,600;1,300&family=Barlow+Condensed:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080808; --surface: #111111; --surface2: #1a1a1a;
+    --border: #2a2a2a; --accent: #e8321a; --accent2: #ff6b00;
+    --text: #f0ece4; --text-muted: #888; --text-dim: #555;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'Barlow', sans-serif; font-weight: 300; overflow-x: hidden; cursor: none; }
+
+  .cursor { width: 10px; height: 10px; background: var(--accent); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); }
+  .cursor-ring { width: 36px; height: 36px; border: 1px solid rgba(232,50,26,0.5); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: left 0.1s ease, top 0.1s ease; }
+
+  header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 24px 48px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: rgba(8,8,8,0.92); backdrop-filter: blur(20px); }
+  .logo { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 6px; background: linear-gradient(90deg,#fff,var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  nav { display: flex; gap: 40px; }
+  nav a { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 3px; text-transform: uppercase; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+  nav a:hover { color: var(--text); }
+  .header-tag { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; }
+
+  /* FIXED HERO PADDING AND ALIGNMENT */
+  .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 120px 48px 80px; position: relative; overflow: hidden; }
+  .hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 70% 50%, rgba(232,50,26,0.07) 0%, transparent 60%), radial-gradient(ellipse 40% 40% at 20% 80%, rgba(255,107,0,0.04) 0%, transparent 50%); }
+  .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(42,42,42,0.3) 1px,transparent 1px), linear-gradient(90deg,rgba(42,42,42,0.3) 1px,transparent 1px); background-size: 80px 80px; mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 80%); }
+  .hero-label { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; opacity: 0; animation: fadeUp 0.8s ease 0.2s forwards; }
+  
+  /* FIXED FONT SIZE FOR TITLE */
+  .hero-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(56px, 9vw, 130px); line-height: 1.0; letter-spacing: -2px; opacity: 0; animation: fadeUp 0.8s ease 0.4s forwards; margin-top: 20px; }
+  .hero-title em { font-style: normal; color: var(--accent); }  .hero-sub { max-width: 440px; margin-top: 24px; font-size: 15px; line-height: 1.7; color: var(--text-muted); opacity: 0; animation: fadeUp 0.8s ease 0.6s forwards; }
+  .hero-cta { margin-top: 48px; display: flex; align-items: center; gap: 32px; opacity: 0; animation: fadeUp 0.8s ease 0.8s forwards; }
+  .btn-primary { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 3px; text-transform: uppercase; padding: 16px 40px; background: var(--accent); color: #fff; border: none; cursor: none; transition: background 0.2s, transform 0.2s; }
+  .btn-primary:hover { background: var(--accent2); transform: translateY(-2px); }
+  .scroll-hint { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); }
+
+  .section { padding: 120px 48px; }
+  .section-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 64px; border-bottom: 1px solid var(--border); padding-bottom: 24px; }
+  .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 56px; letter-spacing: 2px; line-height: 1; }
+  .section-count { font-family: 'Bebas Neue', sans-serif; font-size: 80px; color: var(--border); line-height: 1; }
+
+  .filters { display: flex; gap: 4px; margin-bottom: 48px; flex-wrap: wrap; }
+  .filter-btn { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; padding: 10px 24px; background: transparent; color: var(--text-muted); border: 1px solid var(--border); cursor: none; transition: all 0.2s; }
+  .filter-btn:hover, .filter-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  .car-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2px; }
+  .car-card { background: var(--surface); position: relative; overflow: hidden; cursor: none; transition: transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94); animation: fadeIn 0.6s ease backwards; }
+  .car-card:hover { transform: scale(1.01); z-index: 2; }
+  .car-card:hover .card-overlay { opacity: 1; }
+  .car-card:hover .card-inner { transform: scale(1); }
+  .car-card:hover .card-arrow { transform: translate(0,0); opacity: 1; }
+
+  .card-img-wrap { aspect-ratio: 16/10; overflow: hidden; background: var(--surface2); position: relative; }
+  .card-inner { width: 100%; height: 100%; transition: transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94); display: flex; align-items: center; justify-content: center; padding: 12px; }
+  .card-badge { position: absolute; top: 16px; left: 16px; background: var(--accent); color: #fff; font-family: 'Barlow Condensed', sans-serif; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; padding: 4px 10px; }
+  .card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(8,8,8,0.8) 0%, transparent 60%); opacity: 0; transition: opacity 0.4s; }
+  .card-arrow { position: absolute; bottom: 16px; right: 16px; width: 40px; height: 40px; background: var(--accent); display: flex; align-items: center; justify-content: center; transform: translate(8px,8px); opacity: 0; transition: all 0.3s; }
+
+  .card-actions { position: absolute; top: 16px; right: 16px; display: flex; gap: 6px; opacity: 0; transition: opacity 0.2s; z-index: 10; }
+  .car-card:hover .card-actions { opacity: 1; }
+  .card-act-btn { width: 32px; height: 32px; border: none; display: flex; align-items: center; justify-content: center; cursor: none; font-size: 14px; transition: transform 0.15s; }
+  .card-act-btn:hover { transform: scale(1.15); }
+  .btn-edit { background: #1a6ee8; }
+  .btn-delete { background: #c0392b; }
+
+  .card-body { padding: 24px; border-top: 1px solid var(--border); }
+  .card-make { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+  .card-name { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 1px; margin-bottom: 4px; }
+  .card-meta { font-size: 13px; color: var(--text-muted); }
+
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 500; display: flex; align-items: stretch; opacity: 0; pointer-events: none; transition: opacity 0.4s; }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal { width: 100%; display: flex; overflow: hidden; transform: translateX(60px); transition: transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94); }
+  .modal-overlay.open .modal { transform: translateX(0); }
+
+  .modal-gallery { flex: 0 0 58%; display: flex; flex-direction: column; }
+  .gallery-main { flex: 1; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+  .gallery-thumbs { display: flex; gap: 2px; height: 110px; flex-shrink: 0; }
+  .gallery-thumb { flex: 1; overflow: hidden; cursor: none; position: relative; display: flex; align-items: center; justify-content: center; opacity: 0.4; transition: opacity 0.2s; }
+  .gallery-thumb.active { opacity: 1; }
+  .gallery-thumb.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--accent); }
+  .gallery-thumb:hover { opacity: 0.8; }
+  .thumb-label { position: absolute; bottom: 8px; left: 0; right: 0; text-align: center; font-family: 'Barlow Condensed', sans-serif; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.55); pointer-events: none; }
+
+  .modal-info { flex: 0 0 42%; overflow-y: auto; padding: 56px 44px; position: relative; border-left: 1px solid var(--border); }
+  .modal-close { position: absolute; top: 28px; right: 28px; width: 44px; height: 44px; border: 1px solid var(--border); background: transparent; color: var(--text); font-size: 20px; cursor: none; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .modal-close:hover { background: var(--accent); border-color: var(--accent); }
+
+  .modal-cat-badge { display: inline-block; font-family: 'Barlow Condensed', sans-serif; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; background: var(--accent); color: #fff; padding: 4px 12px; margin-bottom: 20px; }
+  .modal-make { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+  .modal-name { font-family: 'Bebas Neue', sans-serif; font-size: 60px; letter-spacing: 2px; line-height: 0.9; margin-bottom: 12px; }
+  .modal-year { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 32px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+  .modal-tagline { font-size: 17px; font-style: italic; font-weight: 300; color: var(--text); line-height: 1.5; margin-bottom: 24px; }
+  .modal-desc { font-size: 14px; line-height: 1.85; color: var(--text-muted); margin-bottom: 40px; padding-bottom: 40px; border-bottom: 1px solid var(--border); }
+  .features-title { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 16px; }
+  .features-list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .feature-tag { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 1px; padding: 7px 16px; border: 1px solid var(--border); color: var(--text-muted); transition: all 0.2s; }
+  .feature-tag:hover { border-color: var(--accent); color: var(--text); }
+
+  .admin-fab {
+    position: fixed; bottom: 36px; right: 36px; z-index: 800;
+    width: 56px; height: 56px;
+    background: var(--accent); border: none; border-radius: 50%;
+    color: #fff; font-size: 26px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: none; box-shadow: 0 4px 24px rgba(232,50,26,0.5);
+    transition: transform 0.2s, background 0.2s;
+  }
+  .admin-fab:hover { transform: scale(1.1) rotate(45deg); background: var(--accent2); }
+  .admin-fab-label {
+    position: fixed; bottom: 100px; right: 36px; z-index: 800;
+    font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--text-dim); text-align: center; width: 56px;
+    pointer-events: none;
+  }
+
+  .admin-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 900;
+    opacity: 0; pointer-events: none; transition: opacity 0.35s;
+    display: flex; align-items: flex-start; justify-content: flex-end;
+  }
+  .admin-overlay.open { opacity: 1; pointer-events: all; }
+
+  .admin-panel {
+    width: 520px; max-width: 100vw; height: 100vh;
+    background: #0d0d0d; border-left: 1px solid var(--border);
+    overflow-y: auto; display: flex; flex-direction: column;
+    transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94);
+  }
+  .admin-overlay.open .admin-panel { transform: translateX(0); }
+
+  .admin-header {
+    padding: 28px 32px 24px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; background: #0d0d0d; z-index: 10;
+  }
+  .admin-title { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 3px; color: var(--text); }
+  .admin-title span { color: var(--accent); }
+  .admin-close { width: 40px; height: 40px; border: 1px solid var(--border); background: transparent; color: var(--text); font-size: 18px; cursor: none; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
+  .admin-close:hover { background: var(--accent); border-color: var(--accent); }
+
+  .admin-tabs { display: flex; border-bottom: 1px solid var(--border); }
+  .admin-tab { flex: 1; padding: 14px; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; background: transparent; border: none; color: var(--text-muted); cursor: none; transition: all 0.2s; border-bottom: 2px solid transparent; }
+  .admin-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .admin-body { padding: 28px 32px; flex: 1; }
+
+  .admin-car-list { display: flex; flex-direction: column; gap: 8px; }
+  .admin-car-item {
+    display: flex; align-items: center; gap: 16px;
+    background: var(--surface); border: 1px solid var(--border);
+    padding: 14px 16px; transition: border-color 0.2s;
+  }
+  .admin-car-item:hover { border-color: var(--accent); }
+  .admin-car-swatch { width: 40px; height: 40px; border-radius: 4px; flex-shrink: 0; }
+  .admin-car-info { flex: 1; min-width: 0; }
+  .admin-car-name { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1px; line-height: 1; }
+  .admin-car-sub { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+  .admin-item-btns { display: flex; gap: 6px; flex-shrink: 0; }
+  .ai-btn { padding: 7px 14px; border: none; font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; cursor: none; transition: opacity 0.2s; }
+  .ai-btn:hover { opacity: 0.8; }
+  .ai-edit { background: #1a4fa8; color: #fff; }
+  .ai-del { background: #a82020; color: #fff; }
+
+  .admin-form { display: flex; flex-direction: column; gap: 0; }
+  .form-section-title {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--accent); margin: 24px 0 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border);
+  }
+  .form-section-title:first-child { margin-top: 0; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); }
+  .form-input, .form-select, .form-textarea {
+    background: var(--surface2); border: 1px solid var(--border); color: var(--text);
+    padding: 10px 14px; font-family: 'Barlow', sans-serif; font-size: 14px; font-weight: 300;
+    transition: border-color 0.2s; outline: none; width: 100%;
+    cursor: text;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
+  .form-textarea { resize: vertical; min-height: 90px; }
+  .form-select option { background: #1a1a1a; }
+
+  .form-hint { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+
+  .color-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .color-group { display: flex; flex-direction: column; gap: 6px; }
+  .color-preview-row { display: flex; align-items: center; gap: 10px; }
+  .color-input-wrap { position: relative; flex: 1; }
+  .color-swatch-preview { width: 36px; height: 36px; border-radius: 4px; border: 1px solid var(--border); flex-shrink: 0; }
+  input[type="color"] { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: none; }
+  .color-hex { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 10px 14px; font-family: 'Barlow', sans-serif; font-size: 13px; flex: 1; outline: none; transition: border-color 0.2s; }
+  .color-hex:focus { border-color: var(--accent); }
+
+  .features-tags-preview { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; min-height: 32px; }
+  .feat-chip {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 1px;
+    padding: 5px 12px; border: 1px solid var(--border); color: var(--text-muted);
+    display: flex; align-items: center; gap: 6px; cursor: none;
+  }
+  .feat-chip-remove { color: var(--accent); font-size: 14px; line-height: 1; cursor: none; }
+  .feat-chip-remove:hover { color: #fff; }
+
+  .btn-add-feat { padding: 10px 16px; background: var(--surface); border: 1px solid var(--border); color: var(--text-muted); font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 1px; cursor: none; transition: all 0.2s; white-space: nowrap; }
+  .btn-add-feat:hover { border-color: var(--accent); color: var(--text); }
+
+  /* Image preview rows in admin */
+  .img-preview-row {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--surface2); border: 1px solid var(--border); padding: 8px 10px;
+    transition: border-color 0.2s;
+  }
+  .img-preview-row:hover { border-color: var(--accent); }
+  .img-preview-thumb {
+    width: 60px; height: 40px; object-fit: cover; flex-shrink: 0;
+    background: var(--surface); border: 1px solid var(--border);
+  }
+  .img-preview-thumb-err {
+    width: 60px; height: 40px; flex-shrink: 0;
+    background: var(--surface); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: var(--text-dim);
+  }
+  .img-preview-url {
+    flex: 1; font-size: 11px; color: var(--text-muted);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    font-family: 'Barlow Condensed', sans-serif; letter-spacing: 0.5px;
+  }
+  .img-preview-badge {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 9px; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--accent); flex-shrink: 0;
+    background: rgba(232,50,26,0.1); border: 1px solid rgba(232,50,26,0.3);
+    padding: 2px 7px;
+  }
+  .img-preview-num {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 10px; letter-spacing: 1px;
+    color: var(--text-dim); flex-shrink: 0; width: 18px; text-align: center;
+  }
+  .img-preview-remove {
+    width: 28px; height: 28px; background: rgba(168,32,32,0.2); border: 1px solid rgba(168,32,32,0.35);
+    color: #e85555; font-size: 15px; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0; transition: all 0.15s; border-radius: 2px;
+  }
+  .img-preview-remove:hover { background: #a82020; color: #fff; border-color: #a82020; }
+
+  .form-submit-row { display: flex; gap: 10px; margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border); }
+  .btn-submit { flex: 1; padding: 14px; background: var(--accent); border: none; color: #fff; font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 3px; text-transform: uppercase; cursor: none; transition: background 0.2s; }
+  .btn-submit:hover { background: var(--accent2); }
+  .btn-cancel-form { padding: 14px 20px; background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; cursor: none; transition: all 0.2s; }
+  .btn-cancel-form:hover { border-color: var(--text-muted); color: var(--text); }
+
+  .admin-notice { background: rgba(232,50,26,0.12); border: 1px solid rgba(232,50,26,0.3); color: var(--accent); padding: 10px 16px; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 1px; margin-bottom: 20px; display: none; }
+  .admin-notice.show { display: block; }
+
+  footer { border-top: 1px solid var(--border); background: #050505; padding: 56px 48px 40px; }
+  .footer-inner { max-width: 860px; margin: 0 auto; text-align: center; }
+  .footer-title { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--text); margin-bottom: 24px; }
+  .footer-lines { display: flex; flex-direction: column; gap: 10px; margin-bottom: 40px; padding: 28px 32px; border: 1px solid var(--border); background: var(--surface); }
+  .footer-lines p { font-size: 13px; line-height: 1.7; color: var(--text-muted); font-weight: 300; }
+  .footer-lines p strong { color: var(--text); font-weight: 600; }
+  .footer-bottom { display: flex; align-items: center; justify-content: space-between; padding-top: 24px; border-top: 1px solid var(--border); }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 4px; background: linear-gradient(90deg, #fff, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .footer-copy { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); }
+
+  @keyframes fadeUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+  @keyframes modalIn { from { opacity:0; transform:scale(0.96) translateY(16px); } to { opacity:1; transform:scale(1) translateY(0); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .auth-gate {
+    position: fixed; inset: 0; z-index: 2000;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column;
+    transition: opacity 0.6s ease;
+  }
+  .auth-gate.hiding { opacity: 0; pointer-events: none; }
+  .auth-gate.gone { display: none; }
+
+  .auth-noise {
+    position: absolute; inset: 0; opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 200px;
+  }
+  .auth-glow {
+    position: absolute; width: 600px; height: 600px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(232,50,26,0.15) 0%, transparent 70%);
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  .auth-box {
+    position: relative; z-index: 1;
+    width: 420px; max-width: calc(100vw - 48px);
+    border: 1px solid var(--border);
+    background: #0d0d0d;
+    padding: 48px 44px 44px;
+    animation: modalIn 0.5s ease forwards;
+  }
+  .auth-logo {
+    font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 6px;
+    background: linear-gradient(90deg,#fff,var(--accent));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 32px;
+  }
+  .auth-headline {
+    font-family: 'Bebas Neue', sans-serif; font-size: 38px; letter-spacing: 1px; line-height: 1;
+    margin-bottom: 10px; color: var(--text);
+  }
+  .auth-sub {
+    font-size: 13px; color: var(--text-muted); line-height: 1.7;
+    margin-bottom: 36px; font-weight: 300;
+  }
+  .auth-divider {
+    display: flex; align-items: center; gap: 14px; margin-bottom: 28px;
+  }
+  .auth-divider-line { flex: 1; height: 1px; background: var(--border); }
+  .auth-divider-text { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); }
+
+  .btn-discord {
+    width: 100%; display: flex; align-items: center; justify-content: center; gap: 12px;
+    padding: 16px 24px;
+    background: #5865F2; border: none; color: #fff;
+    font-family: 'Barlow Condensed', sans-serif; font-size: 14px; letter-spacing: 3px; text-transform: uppercase;
+    cursor: pointer; transition: background 0.2s, transform 0.15s;
+    margin-bottom: 16px;
+  }
+  .btn-discord:hover { background: #ba2815; transform: translateY(-1px); }
+
+  .user-chip {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--surface); border: 1px solid var(--border);
+    padding: 6px 14px 6px 6px;
+    font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 1px;
+    color: var(--text-muted);
+  }
+  .user-chip img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+  .user-chip-avatar-placeholder {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: #5865F2; display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: #fff; font-weight: 600; flex-shrink: 0;
+  }
+  .user-chip-name { color: var(--text); }
+  .user-chip-badge {
+    font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase;
+    background: var(--accent); color: #fff; padding: 2px 6px; margin-left: 4px;
+  }
+  .user-chip-badge.viewer { background: #2a2a2a; color: var(--text-dim); }
+  .btn-logout {
+    background: transparent; border: none; color: var(--text-dim);
+    font-size: 13px; cursor: pointer; padding: 4px 0 4px 8px;
+    border-left: 1px solid var(--border); margin-left: 6px;
+    transition: color 0.2s;
+  }
+  .btn-logout:hover { color: var(--accent); }
+
+  .denied-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1500;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s;
+  }
+  .denied-overlay.open { opacity: 1; pointer-events: all; }
+  .denied-box {
+    width: 380px; max-width: calc(100vw - 48px);
+    background: #0d0d0d; border: 1px solid #3a1010;
+    padding: 44px; text-align: center;
+    animation: modalIn 0.4s ease forwards;
+  }
+  .denied-icon { font-size: 40px; margin-bottom: 16px; }
+  .denied-title { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 2px; color: var(--accent); margin-bottom: 10px; }
+  .denied-msg { font-size: 13px; color: var(--text-muted); line-height: 1.7; margin-bottom: 28px; }
+  .denied-id { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 28px; padding: 10px 16px; border: 1px solid var(--border); display: inline-block; }
+  .denied-btn { padding: 12px 32px; background: var(--surface); border: 1px solid var(--border); color: var(--text-muted); font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+  .denied-btn:hover { border-color: var(--text-muted); color: var(--text); }
+
+  body.viewer-mode .admin-fab,
+  body.viewer-mode .admin-fab-label,
+  body.viewer-mode .card-actions { display: none !important; }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); }
+
+  @media (max-width: 900px) {
+    .modal { flex-direction: column; overflow-y: auto; }
+    .modal-gallery { flex: none; height: 50vh; }
+    .modal-info { padding: 36px 24px; }
+    header { padding: 20px 24px; }
+    nav { display: none; }
+    .section { padding: 80px 24px; }
+    .hero { padding: 60px 24px; }
+    .admin-panel { width: 100vw; }
+    footer { padding: 40px 24px 32px; }
+    .footer-lines { padding: 20px; }
+    .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+  }
+</style>
+</head>
+<body class="viewer-mode">
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<div class="auth-gate" id="authGate">
+  <div class="auth-noise"></div>
+  <div class="auth-glow"></div>
+  <div class="auth-box" id="authBox">
+    <div id="authLogin">
+      <div class="auth-logo">YATRA AUTOS</div>
+      <div class="auth-headline">Welcome To The Showroom </div>
+      <p class="auth-sub">Sign in with Discord to access the showcase.</p>
+      <div class="auth-divider">
+        <div class="auth-divider-line"></div>
+        <div class="auth-divider-text">Continue with</div>
+        <div class="auth-divider-line"></div>
+      </div>
+      <button class="btn-discord" id="btnDiscordLogin">
+        <svg width="22" height="16" viewBox="0 0 71 55" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#c0)"><path d="M60.1045 4.8978C55.5792 2.8214 50.7265 1.2916 45.6527 0.41542C45.5603 0.39851 45.468 0.44077 45.4204 0.52529C44.7963 1.6353 44.105 3.0834 43.6209 4.2216C38.1637 3.4046 32.7345 3.4046 27.3892 4.2216C26.905 3.0581 26.1886 1.6353 25.5617 0.52529C25.5141 0.44359 25.4218 0.40133 25.3294 0.41542C20.2584 1.2888 15.4057 2.8186 10.8776 4.8978C10.8384 4.9147 10.8048 4.9429 10.7825 4.9795C1.57795 18.7309 -0.943561 32.1443 0.293408 45.3914C0.299005 45.4562 0.335386 45.5182 0.385169 45.5576C7.41035 50.7556 14.2196 53.8773 20.9019 55C20.9943 55.0169 21.0894 54.9746 21.1398 54.8985C22.7196 52.7225 24.1323 50.4339 25.3404 48.0329C25.394 47.9248 25.3432 47.7952 25.2312 47.7557C23.3349 47.0423 21.5316 46.1766 19.7956 45.1998C19.6719 45.1292 19.6635 44.9519 19.7788 44.8698C20.1371 44.6069 20.4954 44.3327 20.8369 44.0556C20.8929 44.0091 20.9691 44.0006 21.0334 44.0302C32.6925 49.5123 45.3785 49.5123 56.9017 44.0302C56.966 43.998 57.0422 44.0063 57.1 44.0528C57.4415 44.3299 57.7998 44.6069 58.1609 44.8698C58.2762 44.9519 58.2706 45.1292 58.1469 45.1998C56.411 46.1908 54.6077 47.0423 52.7086 47.7529C52.5966 47.7924 52.5486 47.9248 52.6022 48.0329C53.8327 50.4283 55.2454 52.7141 56.7981 54.8957C56.8457 54.9746 56.9436 55.0169 57.036 55C63.7464 53.8773 70.5557 50.7556 77.5809 45.5576C77.6335 45.5182 77.667 45.459 77.6726 45.3942C79.1729 30.0791 75.1783 16.7757 67.3071 4.9823C67.2876 4.9429 67.254 4.9147 67.2119 4.8978H60.1045ZM26.0056 37.3413C22.6309 37.3413 19.8571 34.2649 19.8571 30.4896C19.8571 26.7143 22.5755 23.638 26.0056 23.638C29.4636 23.638 32.2093 26.7424 32.154 30.4896C32.154 34.2649 29.4357 37.3413 26.0056 37.3413ZM51.9944 37.3413C48.6197 37.3413 45.8459 34.2649 45.8459 30.4896C45.8459 26.7143 48.5643 23.638 51.9944 23.638C55.4524 23.638 58.1981 26.7424 58.1428 30.4896C58.1428 34.2649 55.4524 37.3413 51.9944 37.3413Z" fill="#ffffff"/></g><defs><clipPath id="c0"><rect width="71" height="55" fill="white"/></clipPath></defs></svg>
+        Login with Discord
+      </button>
+    </div>
+    <div id="authCallback" class="auth-loading" style="display:none;">
+      <div class="auth-spinner"></div>
+      <div class="auth-loading-text">Verifying with Discord…</div>
+    </div>
+  </div>
+</div>
+
+<div class="denied-overlay" id="deniedOverlay">
+  <div class="denied-box">
+    <div class="denied-icon">👋</div>
+    <div class="denied-title">Welcome</div>
+    <p class="denied-msg">You have successfully signed in with Discord. Ready to explore the showcase?</p>
+    <div class="denied-id" id="deniedIdDisplay"></div>
+    <button class="denied-btn" id="deniedDismiss">Continue</button>
+  </div>
+</div>
+
+<header>
+  <div class="logo">YATRA AUTOS.</div>
+  <div id="headerUser" style="display:none;"></div>
+  <div class="header-tag" id="headerTag">Est. 2024</div>
+</header>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-label">Ultimate Car Encyclopedia</div>
+  <h1 class="hero-title">Machines<br><em>Built To</em><br>Dominate</h1>
+  <p class="hero-sub">Explore the world's most extraordinary automobiles — from supercar legends to modern electric titans.</p>
+  <div class="hero-cta">
+    <button class="btn-primary" onclick="document.querySelector('.section').scrollIntoView({behavior:'smooth'})">Explore Collection</button>
+    <span class="scroll-hint">↓ Scroll to browse</span>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <div><div class="section-label">Full Collection</div><div class="section-title">Choose Your Machine</div></div>
+    <div class="section-count" id="sectionCount">12</div>
+  </div>
+  <div class="filters">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="supercar">Supercar</button>
+    <button class="filter-btn" data-filter="hypercar">Hypercar</button>
+    <button class="filter-btn" data-filter="electric">Electric</button>
+    <button class="filter-btn" data-filter="suv">SUV</button>
+  </div>
+  <div class="car-grid" id="carGrid"></div>
+</section>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-gallery">
+      <div class="gallery-main" id="galleryMain"></div>
+      <div class="gallery-thumbs" id="galleryThumbs"></div>
+    </div>
+    <div class="modal-info">
+      <button class="modal-close" id="modalClose">✕</button>
+      <div class="modal-cat-badge" id="modalBadge"></div>
+      <div class="modal-make" id="modalMake"></div>
+      <div class="modal-name" id="modalName"></div>
+      <div class="modal-year" id="modalYear"></div>
+      <div class="modal-tagline" id="modalTagline"></div>
+      <div class="modal-desc" id="modalDesc"></div>
+      <div class="features-title">Key Features</div>
+      <div class="features-list" id="featuresList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="admin-fab-label">Manage</div>
+<button class="admin-fab" id="adminFab" title="Manage Cars">✚</button>
+
+<div class="admin-overlay" id="adminOverlay">
+  <div class="admin-panel">
+    <div class="admin-header">
+      <div class="admin-title">Car <span>Manager</span></div>
+      <button class="admin-close" id="adminClose">✕</button>
+    </div>
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-tab="list">Car List</button>
+      <button class="admin-tab" data-tab="add">Add New Car</button>
+    </div>
+    <div class="admin-body">
+      <div id="adminNotice" class="admin-notice"></div>
+
+      <div id="tabList">
+        <div id="adminCarList" class="admin-car-list"></div>
+      </div>
+
+      <div id="tabAdd" style="display:none;">
+        <div class="admin-form" id="adminForm">
+
+          <div class="form-section-title">Basic Info</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Brand / Make *</label>
+              <input class="form-input" id="f_make" placeholder="e.g. Ferrari" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Model Name *</label>
+              <input class="form-input" id="f_name" placeholder="e.g. SF90 Stradale" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Year *</label>
+              <input class="form-input" id="f_year" type="number" placeholder="e.g. 2024" min="1900" max="2099" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Category *</label>
+              <select class="form-select" id="f_category">
+                <option value="supercar">Supercar</option>
+                <option value="hypercar">Hypercar</option>
+                <option value="electric">Electric</option>
+                <option value="suv">SUV</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Badge Label *</label>
+            <input class="form-input" id="f_badge" placeholder="e.g. V10 Supercar, Electric Hypercar" />
+            <span class="form-hint">Short label shown on the card (e.g. "Hybrid", "Track Special")</span>
+          </div>
+
+          <div class="form-section-title">Description</div>
+          <div class="form-group">
+            <label class="form-label">Tagline *</label>
+            <input class="form-input" id="f_tagline" placeholder="e.g. The pinnacle of speed and luxury" />
+            <span class="form-hint">One punchy sentence shown in italics in the modal</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Full Description *</label>
+            <textarea class="form-textarea" id="f_desc" placeholder="Write a detailed paragraph about this car..."></textarea>
+          </div>
+
+          <div class="form-section-title">Images</div>
+          <div class="form-group full">
+            <label class="form-label">Car Images (up to 6)</label>
+            <div class="img-input-wrap" style="display:flex;gap:8px;">
+              <input class="form-input" id="f_img_url" placeholder="Paste an image URL…" style="flex:1;" />
+              <button class="btn-add-feat" id="imgAddBtn" type="button">+ Add</button>
+            </div>
+            <div id="imgPreviewList" style="display:flex;flex-direction:column;gap:8px;margin-top:10px;"></div>
+            <span class="form-hint">Add up to 6 URLs. First image is used as the card thumbnail. Leave blank to use the vector illustration.</span>
+          </div>
+
+          <div class="form-section-title">Car Colors</div>
+          <div class="color-grid">
+            <div class="color-group">
+              <label class="form-label">Background Color</label>
+              <div class="color-preview-row">
+                <div class="color-swatch-preview" id="sw_bg" style="background:#0d0d0d;"></div>
+                <div class="color-input-wrap">
+                  <input class="color-hex" id="f_bg" value="#0d0d0d" maxlength="7" />
+                  <input type="color" id="cp_bg" value="#0d0d0d" />
+                </div>
+              </div>
+            </div>
+            <div class="color-group">
+              <label class="form-label">Body Color</label>
+              <div class="color-preview-row">
+                <div class="color-swatch-preview" id="sw_body" style="background:#cc1a00;"></div>
+                <div class="color-input-wrap">
+                  <input class="color-hex" id="f_body" value="#cc1a00" maxlength="7" />
+                  <input type="color" id="cp_body" value="#cc1a00" />
+                </div>
+              </div>
+            </div>
+            <div class="color-group">
+              <label class="form-label">Accent / Highlight</label>
+              <div class="color-preview-row">
+                <div class="color-swatch-preview" id="sw_accent" style="background:#ff3300;"></div>
+                <div class="color-input-wrap">
+                  <input class="color-hex" id="f_accent" value="#ff3300" maxlength="7" />
+                  <input type="color" id="cp_accent" value="#ff3300" />
+                </div>
+              </div>
+            </div>
+            <div class="color-group">
+              <label class="form-label">Wheel Color</label>
+              <div class="color-preview-row">
+                <div class="color-swatch-preview" id="sw_wheel" style="background:#222222;"></div>
+                <div class="color-input-wrap">
+                  <input class="color-hex" id="f_wheel" value="#222222" maxlength="7" />
+                  <input type="color" id="cp_wheel" value="#222222" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section-title">Key Features</div>
+          <div class="form-group">
+            <label class="form-label">Add Features (up to 8)</label>
+            <div class="features-input-wrap">
+              <input class="form-input" id="f_feat_input" placeholder="e.g. Carbon Ceramic Brakes" style="flex:1;" />
+              <button class="btn-add-feat" id="featAddBtn">+ Add</button>
+            </div>
+            <div class="features-tags-preview" id="featTagsPreview"></div>
+          </div>
+
+          <div class="form-submit-row">
+            <button class="btn-submit" id="formSubmitBtn">Save Car</button>
+            <button class="btn-cancel-form" id="formCancelBtn">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-title">Priority Package Terms &amp; Conditions</div>
+    <div class="footer-lines">
+      <p>After purchasing a Priority Package, the buyer has <strong>15 days</strong> to claim and activate their in-game priority benefits.</p>
+      <p>If 15 days have elapsed without activation, the Priority Package will no longer be eligible for redemption.</p>
+      <p>By purchasing any Priority Package, you confirm that you have read and agreed to the <strong>Tebex Terms and Conditions</strong>.</p>
+      <p>If you experience issues while purchasing through Tebex, please ensure that international transactions are enabled in your banking application.</p>
+      <p>For payment-related issues, you must contact your bank directly.</p>
+      <p>All payments must be completed exclusively through the <strong>Tebex Store</strong>. No alternative payment methods will be accepted.</p>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-logo">YATRA AUTOS.</span>
+      <span class="footer-copy">© 2026 YATRA AUTOS Car Showcase. All rights reserved.</span>
+    </div>
+  </div>
+</footer>
+
+<script type="module">
+const DISCORD_CONFIG = {
+  CLIENT_ID:    '1480114853636079757',      
+  REDIRECT_URI: window.location.href.split('?')[0].split('#')[0], 
+  SCOPE:        'identify',
+  ADMIN_IDS: [
+    '943916057133994004',  
+    '987654321098765432',
+  ],
+};
+
+let currentUser  = null;   
+let isAdmin      = false;
+let isAuthed     = false;
+
+function buildDiscordAuthURL() {
+  const state = crypto.randomUUID();
+  sessionStorage.setItem('discord_oauth_state', state);
+  const params = new URLSearchParams({
+    client_id:     DISCORD_CONFIG.CLIENT_ID,
+    redirect_uri:  DISCORD_CONFIG.REDIRECT_URI,
+    response_type: 'token',          
+    scope:         DISCORD_CONFIG.SCOPE,
+    state,
+  });
+  return `https://discord.com/api/oauth2/authorize?${params}`;
+}
+
+async function fetchDiscordUser(token) {
+  const res = await fetch('https://discord.com/api/users/@me', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Discord API error');
+  return res.json();
+}
+
+function getAvatarURL(user) {
+  if (!user.avatar) return null;
+  return `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64`;
+}
+
+async function handleOAuthCallback() {
+  const hash   = window.location.hash.slice(1);
+  if (!hash) return false;
+  const params = new URLSearchParams(hash);
+  const token  = params.get('access_token');
+  const state  = params.get('state');
+  if (!token) return false;
+
+  const savedState = sessionStorage.getItem('discord_oauth_state');
+  sessionStorage.removeItem('discord_oauth_state');
+  if (state && savedState && state !== savedState) {
+    showAuthError('OAuth state mismatch. Please try again.');
+    return true;
+  }
+
+  document.getElementById('authLogin').style.display    = 'none';
+  document.getElementById('authCallback').style.display = 'block';
+
+  history.replaceState(null, '', window.location.pathname + window.location.search);
+
+  try {
+    const user = await fetchDiscordUser(token);
+    finishAuth(user, token);   // ← pass token through
+  } catch (e) {
+    showAuthError('Could not verify your Discord account. Please try again.');
+  }
+  return true;
+}
+
+function finishAuth(user, token) {
+  currentUser  = user;
+  isAdmin      = DISCORD_CONFIG.ADMIN_IDS.includes(String(user.id));
+  isAuthed     = true;
+  renderUserChip();
+  dismissAuthGate();
+
+  if (!isAdmin) {
+    const el = document.getElementById('deniedIdDisplay');
+    el.textContent = `Your Discord ID: ${user.id}`;
+    document.getElementById('deniedOverlay').classList.add('open');
+    document.body.classList.add('viewer-mode');
+  } else {
+    document.body.classList.remove('viewer-mode');
+  }
+}
+
+function dismissAuthGate() {
+  const gate = document.getElementById('authGate');
+  gate.classList.add('hiding');
+  setTimeout(() => gate.classList.add('gone'), 650);
+}
+
+function renderUserChip() {
+  const wrap = document.getElementById('headerUser');
+  const tag  = document.getElementById('headerTag');
+  const avatarURL = currentUser ? getAvatarURL(currentUser) : null;
+  const displayName = currentUser
+    ? (currentUser.global_name || currentUser.username)
+    : 'User';
+  const avatarHTML = avatarURL
+    ? `<img src="${avatarURL}" alt="${displayName}" />`
+    : `<div class="user-chip-avatar-placeholder">${displayName[0].toUpperCase()}</div>`;
+  const badgeHTML = isAdmin
+    ? `<span class="user-chip-badge">Admin</span>`
+    : `<span class="user-chip-badge viewer">🚗</span>`;
+
+  wrap.innerHTML = `
+    <div class="user-chip">
+      ${avatarHTML}
+      <span class="user-chip-name">${displayName}</span>
+      ${badgeHTML}
+      <button class="btn-logout" id="btnLogout" title="Sign out">↩</button>
+    </div>`;
+  wrap.style.display = 'block';
+  tag.style.display  = 'none';
+
+  document.getElementById('btnLogout').addEventListener('click', doLogout);
+}
+
+function doLogout() {
+  currentUser  = null;
+  isAdmin      = false;
+  isAuthed     = false;
+  const gate = document.getElementById('authGate');
+  gate.classList.remove('hiding', 'gone');
+  document.getElementById('authLogin').style.display    = 'block';
+  document.getElementById('authCallback').style.display = 'none';
+  document.getElementById('headerUser').style.display   = 'none';
+  document.getElementById('headerTag').style.display    = '';
+  document.body.classList.add('viewer-mode');
+  closeAdmin();
+}
+
+function showAuthError(msg) {
+  document.getElementById('authCallback').style.display = 'none';
+  document.getElementById('authLogin').style.display    = 'block';
+  const box = document.getElementById('authLogin');
+  const existing = box.querySelector('.auth-err');
+  if (existing) existing.remove();
+  const err = document.createElement('div');
+  err.className = 'admin-notice show auth-err';
+  err.style.marginBottom = '16px';
+  err.textContent = msg;
+  box.insertBefore(err, box.firstChild);
+}
+
+document.getElementById('btnDiscordLogin').addEventListener('click', () => {
+  if (DISCORD_CONFIG.CLIENT_ID === 'YOUR_CLIENT_ID_HERE') {
+    showAuthError('⚙ No Discord App configured yet. Using demo mode.');
+    setTimeout(() => {
+      const demoUser = { id: DISCORD_CONFIG.ADMIN_IDS[0], username: 'AdminDemo', global_name: 'Admin Demo', avatar: null };
+      finishAuth(demoUser);
+    }, 900);
+    return;
+  }
+  window.location.href = buildDiscordAuthURL();
+});
+
+document.getElementById('deniedDismiss').addEventListener('click', () => {
+  document.getElementById('deniedOverlay').classList.remove('open');
+});
+
+(async () => {
+  await handleOAuthCallback();
+})();
+
+// ═══════════════════════════════════════════════════════════════════
+//  FIREBASE CONFIG
+//  1. Go to https://console.firebase.google.com
+//  2. Create a project → Add Web App → copy the config object here
+//  3. In Firestore → Rules, paste the security rules from SETUP.md
+// ═══════════════════════════════════════════════════════════════════
+const FIREBASE_CONFIG = {
+  apiKey:                "AIzaSyAvsqXebwWtxunkytfenIyQt1ty81Nhodc",
+  authDomain:            "yatra-autos-acd95.firebaseapp.com",
+  projectId:             "yatra-autos-acd95",
+  storageBucket:         "yatra-autos-acd95.firebasestorage.app",
+  messagingSenderId:     "507367246503",
+  appId:                 "1:507367246503:web:2b12aa77d835f954daa982",
+};
+// Collection + document where the whole catalogue is stored
+const FS_COLLECTION = 'catalogue';
+const FS_DOC        = 'cars';
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let cars          = [];
+let nextId        = 13;
+let editingId     = null;
+let currentFilter = 'all';
+let tempFeatures  = [];
+let tempImages    = [];
+
+// ─── FIREBASE INIT ───────────────────────────────────────────────────────────
+import { initializeApp }                         from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getFirestore, doc, getDoc, setDoc,
+         onSnapshot }                            from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+const fbApp = initializeApp(FIREBASE_CONFIG);
+const db    = getFirestore(fbApp);
+const carDocRef = doc(db, FS_COLLECTION, FS_DOC);
+
+// ─── LOADING INDICATOR ───────────────────────────────────────────────────────
+function showCatalogueLoading(on) {
+  const grid = document.getElementById('carGrid');
+  if (!grid) return;
+  if (on) {
+    grid.innerHTML = `<div style="grid-column:1/-1;padding:60px 0;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--text-dim);">
+      <div style="width:28px;height:28px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px;"></div>
+      Loading Catalogue…
+    </div>`;
+  }
+}
+
+// ─── LOAD FROM FIRESTORE (real-time listener) ────────────────────────────────
+function loadFromFirestore() {
+  showCatalogueLoading(true);
+  // onSnapshot fires immediately with current data, then again on every change
+  onSnapshot(carDocRef, (snap) => {
+    if (snap.exists()) {
+      const data = snap.data();
+      cars   = Array.isArray(data.list) ? data.list : [];
+      nextId = typeof data.nextId === 'number' ? data.nextId : (Math.max(0, ...cars.map(c => c.id)) + 1);
+    } else {
+      // First ever load — seed with defaults
+      cars   = getDefaultCars();
+      nextId = 13;
+      saveToStorage(); // write defaults to Firestore
+    }
+    renderCards();
+  }, (err) => {
+    console.error('Firestore error:', err);
+    showCatalogueLoading(false);
+  });
+}
+
+// ─── SAVE TO FIRESTORE ────────────────────────────────────────────────────────
+async function saveToStorage() {
+  try {
+    await setDoc(carDocRef, { list: cars, nextId });
+  } catch (err) {
+    console.error('Firestore save error:', err);
+    alert('⚠ Save failed. Check your Firebase config and Firestore rules.');
+  }
+}
+
+// ─── DEFAULT CARS (seeded into Firestore on first run) ───────────────────────
+function getDefaultCars() {
+  return [
+    { id:1,  make:"Ferrari",       name:"SF90 Stradale",      year:2023, category:"supercar",  badge:"Hybrid Supercar",  images:[],
+      tagline:"Where passion meets perfection — a hybrid masterpiece that still makes you feel alive.",
+      colors:{bg:"#120604",body:"#cc1a00",accent:"#ff3300",wheel:"#222222"},
+      desc:"The SF90 Stradale represents the pinnacle of Ferrari engineering — a plug-in hybrid combining a twin-turbocharged V8 with three electric motors.",
+      features:["Plug-In Hybrid","7-Speed DCT","Carbon Fiber Body","Adaptive Aero","Carbon-Ceramic Brakes"] },
+    { id:2,  make:"Lamborghini",   name:"Huracán EVO",         year:2023, category:"supercar",  badge:"V10 Supercar",     images:[],
+      tagline:"A naturally aspirated V10 screaming to 8,000 rpm.",
+      colors:{bg:"#0a0d00",body:"#bfdd00",accent:"#d4ff00",wheel:"#1a1a1a"},
+      desc:"The Huracán EVO is the evolution of the most successful V10 in Lamborghini history.",
+      features:["Naturally Aspirated V10","LDVI Chassis Brain","7-Speed LDF","ALA Aerodynamics"] },
+    { id:3,  make:"Bugatti",       name:"Chiron Super Sport",  year:2022, category:"hypercar",  badge:"Hypercar",         images:[],
+      tagline:"The fastest production car ever built.",
+      colors:{bg:"#06060f",body:"#1a1a6e",accent:"#4444cc",wheel:"#333333"},
+      desc:"The Chiron Super Sport pushes the boundaries of the physically possible.",
+      features:["Quad-Turbo W16","Full Carbon Monocoque","Titanium Exhaust"] },
+    { id:4,  make:"Tesla",         name:"Model S Plaid",       year:2023, category:"electric",  badge:"Electric Sedan",   images:[],
+      tagline:"Zero emissions, zero compromises.",
+      colors:{bg:"#060a10",body:"#d8d8d8",accent:"#ffffff",wheel:"#2a2a2a"},
+      desc:"The Model S Plaid redefined electric performance.",
+      features:["Tri-Motor AWD","Yoke Steering","Over-the-Air Updates"] },
+    { id:5,  make:"Porsche",       name:"911 GT3 RS",           year:2023, category:"supercar",  badge:"Track Special",    images:[],
+      tagline:"A racing car with number plates.",
+      colors:{bg:"#001200",body:"#00aa44",accent:"#00ff66",wheel:"#222222"},
+      desc:"The 911 GT3 RS is the most extreme, track-focused 911 ever offered.",
+      features:["9,000 RPM Flat-Six","DRS Rear Wing System","Weissach Package"] },
+    { id:6,  make:"McLaren",       name:"765LT Spider",         year:2022, category:"supercar",  badge:"Longtail",         images:[],
+      tagline:"Open sky, raw power.",
+      colors:{bg:"#140500",body:"#ff6600",accent:"#ff9900",wheel:"#111111"},
+      desc:"The 765LT Spider blends Longtail track focus with open-top motoring.",
+      features:["Retractable Hardtop","Titanium Exhaust","Carbon MonoCell II-T"] },
+    { id:7,  make:"Rimac",         name:"Nevera",               year:2023, category:"hypercar",  badge:"Electric Hypercar",images:[],
+      tagline:"The world's most powerful production car.",
+      colors:{bg:"#00060e",body:"#003366",accent:"#0088ff",wheel:"#111111"},
+      desc:"The Rimac Nevera is the fastest accelerating production car ever made.",
+      features:["Four-Motor Torque Vectoring","120 kWh Battery Pack","800V Architecture"] },
+    { id:8,  make:"Aston Martin",  name:"Valkyrie",             year:2022, category:"hypercar",  badge:"F1 Road Car",      images:[],
+      tagline:"Developed with Red Bull Racing.",
+      colors:{bg:"#04000a",body:"#006633",accent:"#00ff88",wheel:"#1a1a1a"},
+      desc:"Co-developed with Red Bull Racing's F1 division.",
+      features:["11,100 RPM V12","KERS Hybrid Boost","Red Bull F1 Aero"] },
+    { id:9,  make:"Lamborghini",   name:"Urus Performante",     year:2023, category:"suv",       badge:"Super SUV",        images:[],
+      tagline:"An SUV that laps the Nürburgring faster than sports cars.",
+      colors:{bg:"#100700",body:"#cc6600",accent:"#ff8800",wheel:"#222222"},
+      desc:"The Urus Performante is the track-focused version of the world's most powerful SUV.",
+      features:["Sport Exhaust System","Carbon Ceramic Brakes","Pirelli P Zero Trofeo R"] },
+    { id:10, make:"Porsche",       name:"Taycan Turbo S",       year:2023, category:"electric",  badge:"Electric Sport",   images:[],
+      tagline:"The benchmark for electric performance.",
+      colors:{bg:"#060010",body:"#660099",accent:"#9900cc",wheel:"#2a2a2a"},
+      desc:"The Taycan Turbo S sets the gold standard for electric performance cars.",
+      features:["800V Architecture","Launch Control Mode","Adaptive Air Suspension"] },
+    { id:11, make:"Koenigsegg",    name:"Jesko Absolut",        year:2022, category:"hypercar",  badge:"300+ mph",         images:[],
+      tagline:"Designed for one purpose — to be the fastest road car.",
+      colors:{bg:"#0c0c00",body:"#cccc00",accent:"#ffff44",wheel:"#111111"},
+      desc:"The Jesko Absolut has a theoretical top speed of 330 mph.",
+      features:["Light Speed Transmission","E85 Biofuel V8","Full Carbon Body"] },
+    { id:12, make:"Rolls-Royce",   name:"Ghost Black Badge",    year:2023, category:"suv",       badge:"Luxury",           images:[],
+      tagline:"Power concealed beneath a magnificent exterior.",
+      colors:{bg:"#070707",body:"#1a1a1a",accent:"#777777",wheel:"#111111"},
+      desc:"The Ghost Black Badge is Rolls-Royce's darker alter ego.",
+      features:["Starlight Headliner","Magic Carpet Ride Chassis","Bespoke Audio"] },
+  ];
+}
+
+function makeSVG(car, uid) {
+  const c = car.colors;
+  return `<svg viewBox="0 0 600 300" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg${uid}" cx="50%" cy="30%" r="70%"><stop offset="0%" stop-color="${c.body}"/><stop offset="100%" stop-color="${c.accent}" stop-opacity="0.5"/></radialGradient>
+    <radialGradient id="wg${uid}" cx="40%" cy="30%" r="70%"><stop offset="0%" stop-color="#555"/><stop offset="100%" stop-color="${c.wheel}"/></radialGradient>
+  </defs>
+  <ellipse cx="300" cy="248" rx="195" ry="11" fill="#000" opacity="0.55"/>
+  <path d="M82 212 L82 184 Q84 173 102 170 L498 170 Q516 173 518 184 L518 212 Z" fill="url(#bg${uid})" stroke="${c.accent}" stroke-width="0.6"/>
+  <path d="M168 170 Q198 132 233 122 L367 122 Q402 132 432 170 Z" fill="url(#bg${uid})" stroke="${c.accent}" stroke-width="0.5"/>
+  <circle cx="167" cy="224" r="27" fill="${c.wheel}" stroke="${c.accent}" stroke-width="1.5"/>
+  <circle cx="167" cy="224" r="21" fill="url(#wg${uid})"/>
+  <circle cx="433" cy="224" r="27" fill="${c.wheel}" stroke="${c.accent}" stroke-width="1.5"/>
+  <circle cx="433" cy="224" r="21" fill="url(#wg${uid})"/>
+</svg>`;
+}
+
+function renderCards(filter) {
+  if (filter !== undefined) currentFilter = filter;
+  const grid = document.getElementById('carGrid');
+  grid.innerHTML = '';
+  const list = currentFilter === 'all' ? cars : cars.filter(c => c.category === currentFilter);
+  document.getElementById('sectionCount').textContent = cars.length;
+
+  list.forEach((car, i) => {
+    const card = document.createElement('div');
+    card.className = 'car-card';
+    card.style.animationDelay = i * 0.05 + 's';
+    card.dataset.id = car.id;
+    card.innerHTML = `
+      <div class="card-img-wrap">
+        <div class="card-inner" style="background:${car.colors.bg};">
+          ${(car.images && car.images.length > 0) 
+            ? `<img src="${car.images[0]}" style="width:100%; height:100%; object-fit:cover; opacity: 0.8;" />` 
+            : makeSVG(car,'c'+car.id)}
+        </div>
+        <div class="card-badge">${car.badge}</div>
+        <div class="card-overlay"></div>
+        <div class="card-actions">
+          <button class="card-act-btn btn-edit" title="Edit">✎</button>
+          <button class="card-act-btn btn-delete" title="Delete">✕</button>
+        </div>
+        <div class="card-arrow"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M8 3l5 5-5 5" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      </div>
+      <div class="card-body">
+        <div class="card-make">${car.make}</div>
+        <div class="card-name">${car.name}</div>
+        <div class="card-meta">${car.year} · ${car.category.charAt(0).toUpperCase()+car.category.slice(1)}</div>
+      </div>`;
+    card.querySelector('.card-body').addEventListener('click', () => openModal(car));
+    card.querySelector('.card-inner').addEventListener('click', () => openModal(car));
+    card.querySelector('.card-overlay').addEventListener('click', () => openModal(car));
+    card.querySelector('.btn-edit').addEventListener('click', e => { e.stopPropagation(); if (isAdmin) openEdit(car.id); });
+    card.querySelector('.btn-delete').addEventListener('click', e => { e.stopPropagation(); if (isAdmin) deleteCar(car.id); });
+    grid.appendChild(card);
+  });
+}
+
+// SVG angle variants for the 4-thumb gallery (used when no real images)
+const svgAngles = [
+  { label: 'Front 3/4', scaleX:  1,   rotate:  0,   scale: 1.0  },
+  { label: 'Side View', scaleX:  1,   rotate:  0,   scale: 1.08 },
+  { label: 'Rear 3/4',  scaleX: -1,   rotate:  0,   scale: 1.0  },
+  { label: 'Close-Up',  scaleX:  1,   rotate: -3,   scale: 1.18 },
+];
+
+function openModal(car) {
+  document.getElementById('modalBadge').textContent   = car.badge;
+  document.getElementById('modalMake').textContent    = car.make;
+  document.getElementById('modalName').textContent    = car.name;
+  document.getElementById('modalYear').textContent    = car.year + '  ·  ' + car.category.charAt(0).toUpperCase() + car.category.slice(1);
+  document.getElementById('modalTagline').textContent = '\u201C' + car.tagline + '\u201D';
+  document.getElementById('modalDesc').textContent    = car.desc;
+  document.getElementById('featuresList').innerHTML   = car.features.map(f => `<span class="feature-tag">${f}</span>`).join('');
+
+  const main   = document.getElementById('galleryMain');
+  const thumbs = document.getElementById('galleryThumbs');
+  main.style.background = car.colors.bg;
+  main.style.padding    = '20px';
+
+  const hasImages = car.images && car.images.length > 0;
+
+  if (hasImages) {
+    // ── Real photo gallery ──────────────────────────────────────
+    const imgLabels = ['Front', 'Rear', 'Interior', 'Detail', 'Side', 'Engine'];
+
+    function setActivePhoto(src, thumbEl) {
+      main.innerHTML = `<img src="${src}" style="width:100%;height:100%;object-fit:cover;" />`;
+      main.style.padding = '0';
+      thumbs.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
+      thumbEl.classList.add('active');
+    }
+
+    thumbs.innerHTML = car.images.map((img, idx) => `
+      <div class="gallery-thumb ${idx === 0 ? 'active' : ''}" data-idx="${idx}" style="background:#111;">
+        <img src="${img}" style="width:100%;height:100%;object-fit:cover;opacity:0.85;" />
+        <div class="thumb-label">${imgLabels[idx] || 'View ' + (idx + 1)}</div>
+      </div>`).join('');
+
+    // Set main image
+    main.innerHTML = `<img src="${car.images[0]}" style="width:100%;height:100%;object-fit:cover;" />`;
+    main.style.padding = '0';
+
+    thumbs.querySelectorAll('.gallery-thumb').forEach(t => {
+      t.addEventListener('click', () => {
+        const idx = +t.dataset.idx;
+        setActivePhoto(car.images[idx], t);
+      });
+    });
+
+  } else {
+    // ── SVG angle variants (4 thumbs) ─────────────────────────
+    main.style.padding = '20px';
+
+    function renderAngle(angle, uid) {
+      const transform = `scaleX(${angle.scaleX}) rotate(${angle.rotate}deg) scale(${angle.scale})`;
+      return `<div style="width:100%;height:100%;transform:${transform};transform-origin:center;">
+        ${makeSVG({...car, id: car.id * 100 + uid}, 'mv' + car.id + '_' + uid)}
+      </div>`;
+    }
+
+    // Main starts on angle 0
+    main.innerHTML = renderAngle(svgAngles[0], 0);
+
+    thumbs.innerHTML = svgAngles.map((a, i) => `
+      <div class="gallery-thumb ${i === 0 ? 'active' : ''}" data-ai="${i}" style="background:${car.colors.bg};padding:6px;">
+        <div style="width:100%;height:calc(100% - 22px);transform:scaleX(${a.scaleX}) rotate(${a.rotate}deg) scale(${a.scale * 0.88});transform-origin:center;">
+          ${makeSVG({...car, id: car.id * 100 + i}, 'th' + car.id + '_' + i)}
+        </div>
+        <div class="thumb-label">${a.label}</div>
+      </div>`).join('');
+
+    thumbs.querySelectorAll('.gallery-thumb').forEach(t => {
+      t.addEventListener('click', () => {
+        thumbs.querySelectorAll('.gallery-thumb').forEach(x => x.classList.remove('active'));
+        t.classList.add('active');
+        const ai = +t.dataset.ai;
+        main.innerHTML = renderAngle(svgAngles[ai], ai + 10);
+      });
+    });
+  }
+
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.getElementById('modalClose').addEventListener('click', closeModal);
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderCards(btn.dataset.filter);
+  });
+});
+
+function openAdmin() {
+  document.getElementById('adminOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  switchTab('list');
+  renderAdminList();
+}
+function closeAdmin() {
+  document.getElementById('adminOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('adminFab').addEventListener('click', () => {
+  if (isAdmin) openAdmin();
+});
+document.getElementById('adminClose').addEventListener('click', closeAdmin);
+
+document.querySelectorAll('.admin-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    switchTab(tab.dataset.tab);
+    if (tab.dataset.tab === 'add') { editingId = null; resetForm(); }
+  });
+});
+
+function switchTab(name) {
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  document.getElementById('tabList').style.display = name === 'list' ? 'block' : 'none';
+  document.getElementById('tabAdd').style.display  = name === 'add'  ? 'block' : 'none';
+  document.getElementById('formSubmitBtn').textContent = editingId ? 'Update Car' : 'Save Car';
+}
+
+function renderAdminList() {
+  const list = document.getElementById('adminCarList');
+  list.innerHTML = cars.map(car => `
+    <div class="admin-car-item">
+      <div class="admin-car-swatch" style="background:linear-gradient(135deg,${car.colors.body},${car.colors.accent});"></div>
+      <div class="admin-car-info">
+        <div class="admin-car-name">${car.make} ${car.name}</div>
+        <div class="admin-car-sub">${car.year} · ${car.category}</div>
+      </div>
+      <div class="admin-item-btns">
+        <button class="ai-btn ai-edit" data-id="${car.id}">Edit</button>
+        <button class="ai-btn ai-del" data-id="${car.id}">Delete</button>
+      </div>
+    </div>`).join('');
+  list.querySelectorAll('.ai-edit').forEach(b => b.addEventListener('click', () => openEdit(+b.dataset.id)));
+  list.querySelectorAll('.ai-del').forEach(b => b.addEventListener('click', () => deleteCar(+b.dataset.id)));
+}
+
+async function deleteCar(id) {
+  if (!confirm('Delete this car?')) return;
+  // Optimistic update
+  const prev = [...cars];
+  cars = cars.filter(c => c.id !== id);
+  renderCards();
+  renderAdminList();
+  try {
+    await apiDelete(id);
+  } catch(e) {
+    // Rollback on error
+    cars = prev;
+    renderCards();
+    renderAdminList();
+    alert('Delete failed — could not reach the server. Changes reverted.');
+  }
+}
+
+function openEdit(id) {
+  const car = cars.find(c => c.id === id);
+  if (!car) return;
+  editingId = id;
+  document.getElementById('f_make').value     = car.make;
+  document.getElementById('f_name').value     = car.name;
+  document.getElementById('f_year').value     = car.year;
+  document.getElementById('f_category').value = car.category;
+  document.getElementById('f_badge').value    = car.badge;
+  document.getElementById('f_tagline').value  = car.tagline;
+  document.getElementById('f_desc').value     = car.desc;
+  tempImages = car.images ? [...car.images] : [];
+  renderImgPreviews();
+  tempFeatures = [...car.features];
+  renderFeatTags();
+  // Open the panel first, then switch to the edit tab
+  document.getElementById('adminOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  switchTab('add');
+  document.querySelector('.admin-panel').scrollTo(0, 0);
+}
+
+document.getElementById('formSubmitBtn').addEventListener('click', async () => {
+  const make = document.getElementById('f_make').value.trim();
+  const name = document.getElementById('f_name').value.trim();
+  if (!make || !name) { alert('Brand and Model Name are required.'); return; }
+
+  const imagesRaw   = document.getElementById('f_images') ? document.getElementById('f_images').value.trim() : '';
+  const imagesArray = tempImages.length ? [...tempImages] : (imagesRaw ? imagesRaw.split(',').map(u=>u.trim()).filter(Boolean) : []);
+
+  const carData = {
+    make, name, year: parseInt(document.getElementById('f_year').value),
+    category: document.getElementById('f_category').value,
+    badge:    document.getElementById('f_badge').value.trim(),
+    tagline:  document.getElementById('f_tagline').value.trim(),
+    desc:     document.getElementById('f_desc').value.trim(),
+    images:   imagesArray,
+    colors: {
+      bg:     document.getElementById('f_bg').value,
+      body:   document.getElementById('f_body').value,
+      accent: document.getElementById('f_accent').value,
+      wheel:  document.getElementById('f_wheel').value,
+    },
+    features: [...tempFeatures],
+  };
+
+  // Disable button while saving
+  const btn = document.getElementById('formSubmitBtn');
+  const origText = btn.textContent;
+  btn.textContent = 'Saving…';
+  btn.disabled = true;
+
+  try {
+    if (editingId) {
+      const updated = await apiUpdate(editingId, carData);
+      const idx = cars.findIndex(c => c.id === editingId);
+      if (idx !== -1) cars[idx] = updated;
+    } else {
+      const created = await apiAdd(carData);
+      cars.push(created);
+    }
+    renderCards();
+    renderAdminList();
+    resetForm();
+    switchTab('list');
+  } catch(e) {
+    alert('Save failed — could not reach the server. Please try again.');
+    console.error(e);
+  } finally {
+    btn.textContent = origText;
+    btn.disabled    = false;
+    editingId = null;
+  }
+});
+
+document.getElementById('formCancelBtn').addEventListener('click', () => {
+  editingId = null;
+  resetForm();
+  switchTab('list');
+});
+
+function resetForm() {
+  ['f_make','f_name','f_year','f_badge','f_tagline','f_desc'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  const imgUrl = document.getElementById('f_img_url');
+  if (imgUrl) imgUrl.value = '';
+  tempImages  = [];
+  renderImgPreviews();
+  tempFeatures = [];
+  renderFeatTags();
+}
+
+['bg','body','accent','wheel'].forEach(key => {
+  const hex = document.getElementById('f_' + key);
+  const cp  = document.getElementById('cp_' + key);
+  const sw  = document.getElementById('sw_' + key);
+  cp.addEventListener('input', () => { hex.value = cp.value; sw.style.background = cp.value; });
+});
+
+document.getElementById('featAddBtn').addEventListener('click', () => {
+  const val = document.getElementById('f_feat_input').value.trim();
+  if (val) { tempFeatures.push(val); document.getElementById('f_feat_input').value = ''; renderFeatTags(); }
+});
+
+function renderFeatTags() {
+  const wrap = document.getElementById('featTagsPreview');
+  wrap.innerHTML = tempFeatures.map((f, i) => `<span class="feat-chip">${f} <span class="feat-chip-remove" data-i="${i}">×</span></span>`).join('');
+  wrap.querySelectorAll('.feat-chip-remove').forEach(x => x.addEventListener('click', () => { tempFeatures.splice(+x.dataset.i, 1); renderFeatTags(); }));
+}
+
+// ─── IMAGE MANAGER ───────────────────────────────────────────────────────────
+const imgLabelsAdmin = ['Thumbnail', 'View 2', 'View 3', 'View 4', 'View 5', 'View 6'];
+
+function renderImgPreviews() {
+  const list = document.getElementById('imgPreviewList');
+  if (!list) return;
+  if (tempImages.length === 0) {
+    list.innerHTML = `<div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);padding:10px 0;">No images added — vector illustration will be used.</div>`;
+    return;
+  }
+  list.innerHTML = tempImages.map((url, i) => `
+    <div class="img-preview-row" data-i="${i}">
+      <span class="img-preview-num">${i + 1}</span>
+      <img class="img-preview-thumb" src="${url}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+      <div class="img-preview-thumb-err" style="display:none;">🖼</div>
+      <span class="img-preview-url" title="${url}">${url}</span>
+      ${i === 0 ? '<span class="img-preview-badge">Card Thumb</span>' : ''}
+      <div class="img-preview-remove" data-i="${i}">×</div>
+    </div>`).join('');
+  list.querySelectorAll('.img-preview-remove').forEach(btn => {
+    btn.addEventListener('click', () => {
+      tempImages.splice(+btn.dataset.i, 1);
+      renderImgPreviews();
+    });
+  });
+}
+
+document.getElementById('imgAddBtn').addEventListener('click', addImageURL);
+document.getElementById('f_img_url').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addImageURL(); } });
+
+function addImageURL() {
+  const inp = document.getElementById('f_img_url');
+  const url = inp.value.trim();
+  if (!url) return;
+  if (tempImages.length >= 6) { inp.value = ''; return; }
+  if (!url.startsWith('http')) { return; }
+  if (tempImages.includes(url)) { inp.value = ''; return; }
+  tempImages.push(url);
+  inp.value = '';
+  renderImgPreviews();
+}
+
+const cursor = document.getElementById('cursor');
+const ring   = document.getElementById('cursorRing');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px';
+  ring.style.left   = e.clientX + 'px'; ring.style.top   = e.clientY + 'px';
+});
+
+// Kick everything off — load catalogue from Firestore
+showCatalogueLoading(true);
+loadFromFirestore();
+renderImgPreviews();
+</script>
+</body>
+</html>
