@@ -827,12 +827,12 @@ document.getElementById('deniedDismiss').addEventListener('click', () => {
 //  3. In Firestore → Rules, paste the security rules from SETUP.md
 // ═══════════════════════════════════════════════════════════════════
 const FIREBASE_CONFIG = {
-  apiKey:                "AIzaSyAvsqXebwWtxunkytfenIyQt1ty81Nhodc",
-  authDomain:            "yatra-autos-acd95.firebaseapp.com",
-  projectId:             "yatra-autos-acd95",
-  storageBucket:         "yatra-autos-acd95.firebasestorage.app",
-  messagingSenderId:     "507367246503",
-  appId:                 "1:507367246503:web:2b12aa77d835f954daa982",
+  apiKey:            "AIzaSyAvsqXebwWtxunkytfenIyQt1ty81Nhodc",
+  authDomain:        "yatra-autos-acd95.firebaseapp.com",
+  projectId:         "yatra-autos-acd95",
+  storageBucket:     "yatra-autos-acd95.firebasestorage.app",
+  messagingSenderId: "507367246503",
+  appId:             "1:507367246503:web:2b12aa77d835f954daa982",
 };
 // Collection + document where the whole catalogue is stored
 const FS_COLLECTION = 'catalogue';
@@ -1175,20 +1175,10 @@ function renderAdminList() {
 
 async function deleteCar(id) {
   if (!confirm('Delete this car?')) return;
-  // Optimistic update
-  const prev = [...cars];
   cars = cars.filter(c => c.id !== id);
   renderCards();
   renderAdminList();
-  try {
-    await apiDelete(id);
-  } catch(e) {
-    // Rollback on error
-    cars = prev;
-    renderCards();
-    renderAdminList();
-    alert('Delete failed — could not reach the server. Changes reverted.');
-  }
+  await saveToStorage();
 }
 
 function openEdit(id) {
@@ -1245,19 +1235,19 @@ document.getElementById('formSubmitBtn').addEventListener('click', async () => {
 
   try {
     if (editingId) {
-      const updated = await apiUpdate(editingId, carData);
       const idx = cars.findIndex(c => c.id === editingId);
-      if (idx !== -1) cars[idx] = updated;
+      if (idx !== -1) cars[idx] = { ...cars[idx], ...carData };
     } else {
-      const created = await apiAdd(carData);
-      cars.push(created);
+      carData.id = nextId++;
+      cars.push(carData);
     }
+    await saveToStorage();
     renderCards();
     renderAdminList();
     resetForm();
     switchTab('list');
   } catch(e) {
-    alert('Save failed — could not reach the server. Please try again.');
+    alert('Save failed — check your Firebase config. Please try again.');
     console.error(e);
   } finally {
     btn.textContent = origText;
